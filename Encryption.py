@@ -1,5 +1,7 @@
-"Encryption algorithm to send a message"
+import math
 from Point import Point
+
+"Encryption algorithm to send a message"
 class Encryption(object):
 
     "Curve: elliptic curve choosen, p: field where the curve is defined, h: number to trasform message, B: generator point"
@@ -32,6 +34,24 @@ class Encryption(object):
         C.setY(yc)
         return C
         
+    """Method which execute the redoubling method to calculate the product of an integer k per a point A"""
+    def __redoubling_method(self, A, k):
+        t=math.log2(k)
+        kbin=k.bin()
+        count=0
+        R=[A]
+        D=A
+        for i in range(t):
+            D=self.__sum_points(D,D)
+            R.append(D)
+
+        Q=Point()
+        for i in kbin:
+            if i==1:
+                Q=self.__sum_points(Q, R.pop(count))
+            count++
+        return Q
+
     def encrypt(self, r, kprv, dkp, Pm):
         V=Point()
         W=Point()
