@@ -13,10 +13,14 @@ class Encryption(object):
 
     """Method used to calculate the gradient of passing line for A and B"""
     def __calc_lmb(self, A, B):
+        xa=A.getX()
+        ya=A.getY()
         if (A==B):
-            return (3*A.getX**2+self.a)/(2*A.getY)
+            return (3*xa**2+self.a)/(2*ya)
         else:
-            return (B.getY-A.getY)/(B.getX-A.getX)
+            xb=B.getX()
+            yb=B.getY()
+            return (yb-ya)/(xb-xa)
 
     """Method used to calculate the sum of two points"""
     def __sum_points(self, A, B):
@@ -36,8 +40,8 @@ class Encryption(object):
         
     """Method which execute the redoubling method to calculate the product of an integer k per a point A"""
     def __redoubling_method(self, A, k):
-        t=math.log2(k)
-        kbin=k.bin()
+        t=int(math.floor(math.log(2,k)))
+        kbin=bin(k)
         count=0
         R=[A]
         D=A
@@ -60,7 +64,12 @@ class Encryption(object):
         return (V,W)
 
     """Method to decrypt and get Pm from pair <V,W>"""
-    def decrypt(self, V, W, kprv):
-        L=V.oppisite(self.p)
-        Pm=self.__sum_points(W, self.__redoubling_method(L,kprv))
+    def decrypt(self, pair, kprv):
+        V=pair[0]
+        W=pair[1]
+        L=V.getOppisite(self.p)
+        Pm=self.__sum_points(W, self.redoubling_method(L,kprv))
         return Pm
+
+    def kpub_generator(self, kprv):
+        return self.__redoubling_method(self.B, kprv)

@@ -1,11 +1,7 @@
 """Base class Point"""
 class Point(object):
-
-    def __init__(self):
-        self.X=0
-        self.Y=0
     
-    def __init__(self, x, y):
+    def __init__(self, x=0, y=0):
         self.X=x
         self.Y=y
 
@@ -21,8 +17,6 @@ class Point(object):
     def getY(self):
         return self.Y
 
-    def opposite(self, p):
-        W=Point()
-        W.setX(self.getX)
-        W.setY(p-self.getY)
+    def getOpposite(self, p):
+        W=Point(self.X, p-self.Y)
         return W
