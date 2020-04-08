@@ -49,11 +49,18 @@ class Encryption(object):
         for i in kbin:
             if i==1:
                 Q=self.__sum_points(Q, R.pop(count))
-            count++
+            count+=1
         return Q
 
-    def encrypt(self, r, kprv, dkp, Pm):
-        V=Point()
-        W=Point()
+    """Method to encypt Pm and generate the pair <V,W> to send"""
+    def encrypt(self, r, kprv, Pdest, Pm):
+        V=self.__redoubling_method(self.B, r)
+        U=self.__redoubling_method(Pdest, r)
+        W=self.__sum_points(Pm, U)
+        return (V,W)
 
-        
+    """Method to decrypt and get Pm from pair <V,W>"""
+    def decrypt(self, V, W, kprv):
+        L=V.oppisite(self.p)
+        Pm=self.__sum_points(W, self.__redoubling_method(L,kprv))
+        return Pm
