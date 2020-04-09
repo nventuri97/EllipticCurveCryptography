@@ -5,6 +5,9 @@ class Point(object):
         self.X=x
         self.Y=y
 
+    def getCoordinate(self):
+        return (self.X, self.Y)
+
     def setX(self, value):
         self.X=value
 
@@ -16,7 +19,3 @@ class Point(object):
 
     def getY(self):
         return self.Y
-
-    def getOpposite(self, p):
-        W=Point(self.X, p-self.Y)
-        return W
