@@ -1,5 +1,6 @@
 import math
 from Point import Point
+from Exception.PointToInfiteException import PointToInfiteException
 
 "Encryption algorithm to send a message"
 class Encryption(object):
@@ -11,65 +12,81 @@ class Encryption(object):
         self.p=p
         self.B=B
 
+    """Method to generate the opposite -A of a point A"""
+    def __gen_Opposite(self, A):
+        W=Point(A.getX(), self.p-A.getY())
+        return W
+
     """Method used to calculate the gradient of passing line for A and B"""
     def __calc_lmb(self, A, B):
-        xa=A.getX()
-        ya=A.getY()
-        if (A==B):
-            return (3*xa**2+self.a)/(2*ya)
+        xa=A.X
+        ya=A.Y
+        if A==B:
+            yaopp=pow(2*ya, self.p-2,self.p)
+            lmb=((3*xa**2+self.a)*yaopp)%self.p
+            return lmb
         else:
-            xb=B.getX()
-            yb=B.getY()
-            return (yb-ya)/(xb-xa)
+            xb=B.X
+            yb=B.Y
+            if (xb-xa)==0:
+                raise PointToInfiteException
+            else:
+                diffOpp=pow(int(xb-xa), self.p-2, self.p)
+                lmb=((yb-ya)*diffOpp)%self.p
+                return lmb
 
     """Method used to calculate the sum of two points"""
     def __sum_points(self, A, B):
-        C= Point()
-
-        xa= A.getX()
-        ya= A.getY()
-        xb= B.getX()
-
-        lmb=self.__calc_lmb(A,B)
-
-        xc=(lmb**2-xa-xb)%self.p
-        yc=(-ya+lmb*(xa-xc))%self.p
-        C.setX(xc)
-        C.setY(yc)
-        return C
+        gradient=self.__calc_lmb(A,B)
+        
+        xa=A.X
+        ya=A.Y
+        if A==B:
+            xc=(gradient**2-2*xa)%self.p
+            yc=(-ya+gradient*(xa-xc))%self.p
+            C=Point(xc, yc)
+            return C
+        else:
+            xb=B.X
+            yb=B.Y
+            xc=(gradient**2-xa-xb)%self.p
+            yc=(-ya+gradient*(xa-xc))%self.p
+            C=Point(xc,yc)
+            return C
         
     """Method which execute the redoubling method to calculate the product of an integer k per a point A"""
     def __redoubling_method(self, A, k):
-        t=int(math.floor(math.log(2,k)))
         kbin=bin(k)
-        count=0
+        kbin=kbin[2:]
         R=[A]
         D=A
-        for i in range(t):
+        Q=Point()
+        count=0
+        for i in kbin[2:]:
             D=self.__sum_points(D,D)
             R.append(D)
-
-        Q=Point()
-        for i in kbin:
-            if i==1:
-                Q=self.__sum_points(Q, R.pop(count))
+            if i=="1":
+                Q=self.__sum_points(Q,R.pop(count))
             count+=1
         return Q
 
     """Method to encypt Pm and generate the pair <V,W> to send"""
-    def encrypt(self, r, kprv, Pdest, Pm):
-        V=self.__redoubling_method(self.B, r)
-        U=self.__redoubling_method(Pdest, r)
-        W=self.__sum_points(Pm, U)
+    def encrypt(self, r, Pdest, Pm):
+        V=self.__redoubling_method(self.B,r)
+        Q=self.__redoubling_method(Pdest, r)
+        W=self.__sum_points(Pm,Q)
         return (V,W)
 
     """Method to decrypt and get Pm from pair <V,W>"""
     def decrypt(self, pair, kprv):
         V=pair[0]
         W=pair[1]
-        L=V.getOppisite(self.p)
-        Pm=self.__sum_points(W, self.redoubling_method(L,kprv))
+        Vf=self.__redoubling_method(V,kprv)
+        Vff=self.__gen_Opposite(Vf)
+        Pm=self.__sum_points(W,Vff)
         return Pm
 
+
+    """Method to generate a public key from a private key given"""
     def kpub_generator(self, kprv):
         return self.__redoubling_method(self.B, kprv)

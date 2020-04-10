@@ -2,6 +2,7 @@
 
 import math
 from Point import Point
+from Exception.NonValidHException import NonValidHException
 
 class KoblitzAlgorithm(object):
 
@@ -12,13 +13,14 @@ class KoblitzAlgorithm(object):
 
     def trasform_message(self, m, h):
         if (m+1)*h>=self.p:
-            raise Exception
+            raise NonValidHException
         else:
             Pm=Point(-1,-1)
             for i in range(h):
                 x=m*h+i
                 y=math.sqrt((x**3+self.a*x+self.b)%self.p)%self.p
-                if y.is_integer:
+                print(y)
+                if y.is_integer():
                     Pm.setX(x)
                     Pm.setY(y)
                     break
