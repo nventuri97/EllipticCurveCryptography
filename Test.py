@@ -3,7 +3,7 @@ import math
 import sys
 from Point import Point
 from KoblitzAlgorithm import KoblitzAlgorithm
-from Encryption import Encryption
+from ECC import ECC
 
 class Test(object):
 
@@ -14,7 +14,7 @@ class Test(object):
         p=129
 
         B=Point(1,2)
-        encryptor=Encryption(14,12,23, B)
+        encryptor=ECC(14,12,23, B)
 
         kprvM=11
         
@@ -38,9 +38,8 @@ class Test(object):
             print("Now you have to decrypt message")
             PmD=encryptor.decrypt(pair, kprvD)
             print(PmD.getCoordinate())
-            y=Pm.Y
             x=Pm.X
-            mr=math.floor(x/y)
+            mr=math.floor(x/h)
             print("Message received is ", mr)
 
     if __name__=="__main__":
