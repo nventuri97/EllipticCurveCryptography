@@ -1,0 +1,3 @@
+
+class NoCurvePointException(Exception):
+    pass
