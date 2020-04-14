@@ -1,6 +1,7 @@
 import math
 from Point import Point
 from Exception.PointToInfiteException import PointToInfiteException
+from Exception.NoCurvePointException import NoCurvePointException
 
 """Define the main method to exchange message on Elliptic Curve"""
 class ECC(object):
@@ -11,6 +12,28 @@ class ECC(object):
         self.b=b
         self.p=p
         self.B=B
+        if(self.__check(self.B)):
+            self.n=self.__calc_ord(self.B)
+        else:
+            raise NoCurvePointException
+
+    """Method to check if a point B belongs to the curve"""
+    def __check(self, B):
+        x=B.X
+        y=math.sqrt((x**3+self.a*x+self.b)%self.p)%self.p
+        if B.Y==y:
+            return True
+        else:
+            return False
+
+    """Method to calculate the order of a point"""
+    def __calc_ord(self, B):
+        i=2
+        try:
+            self.__redoubling_method(B,i)
+        except:
+            return i
+        i+=1
 
     """Method to generate the inverse -A of a point A"""
     def __gen_Inverse(self, A):
@@ -22,9 +45,12 @@ class ECC(object):
         xa=A.X
         ya=A.Y
         if A==B:
-            yaopp=pow(2*ya, self.p-2,self.p)
-            lmb=((3*xa**2+self.a)*yaopp)%self.p
-            return lmb
+            if ya==0:
+                raise PointToInfiteException
+            else:
+                yaopp=pow(2*ya, self.p-2,self.p)
+                lmb=((3*xa**2+self.a)*yaopp)%self.p
+                return lmb
         else:
             xb=B.X
             yb=B.Y
