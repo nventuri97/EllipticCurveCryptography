@@ -14,6 +14,7 @@ class ECC(object):
         self.B=B
         if(self.__check(self.B)):
             self.n=self.__calc_ord(self.B)
+            print(self.n)
         else:
             raise NoCurvePointException
 
@@ -29,11 +30,13 @@ class ECC(object):
     """Method to calculate the order of a point"""
     def __calc_ord(self, B):
         i=2
-        try:
-            self.__redoubling_method(B,i)
-        except:
-            return i
-        i+=1
+        while(True):
+            try:
+                self.__redoubling_method(B,i)
+            except:
+                break
+            i+=1
+        return i    
 
     """Method to generate the inverse -A of a point A"""
     def __gen_Inverse(self, A):
