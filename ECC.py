@@ -1,42 +1,21 @@
 import math
+import random
 from Point import Point
 from Exception.PointToInfiteException import PointToInfiteException
-from Exception.NoCurvePointException import NoCurvePointException
+from Exception.InvalidParameterException import InvalidParameterException
 
 """Define the main method to exchange message on Elliptic Curve"""
 class ECC(object):
 
     """a, b: value of elliptic curv Ep(a,b), p: curve order, B: curve point choosen"""
-    def __init__(self, a, b, p, B):
+    def __init__(self, a, b, p, B,n,h, seed):
         self.a=a
         self.b=b
         self.p=p
         self.B=B
-        if(self.__check(self.B)):
-            self.n=self.__calc_ord(self.B)
-            print(self.n)
-        else:
-            raise NoCurvePointException
-
-    """Method to check if a point B belongs to the curve"""
-    def __check(self, B):
-        x=B.X
-        y=math.sqrt((x**3+self.a*x+self.b)%self.p)%self.p
-        if B.Y==y:
-            return True
-        else:
-            return False
-
-    """Method to calculate the order of a point"""
-    def __calc_ord(self, B):
-        i=2
-        while(True):
-            try:
-                self.__redoubling_method(B,i)
-            except:
-                break
-            i+=1
-        return i    
+        self.n=n
+        self.h=h
+        self.seed=seed   
 
     """Method to generate the inverse -A of a point A"""
     def __gen_Inverse(self, A):
@@ -115,7 +94,17 @@ class ECC(object):
         Pm=self.__sum_points(W,Vff)
         return Pm
 
-
     """Method to generate a public key from a private key given"""
-    def kpub_generator(self, kprv):
+    def __kpub_generator(self, kprv):
         return self.__redoubling_method(self.B, kprv)
+
+    """Method to check if private key is right"""
+    def keys_generator(self):
+        N=len(bin(self.n))
+        if (N<160 & N>223):
+            raise InvalidParameterException
+        random.seed(self.seed)
+        c=random.randint(1, self.n-1)
+        d=(c%(self.n-1))+1
+        Q=self.__kpub_generator(d)
+        return (d,Q)
