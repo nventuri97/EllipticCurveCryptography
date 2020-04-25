@@ -74,7 +74,7 @@ class ECC(object):
             D=self.__sum_points(D,D)
             R.append(D)
             if i=="1":
-                Q=self.__sum_points(Q,R.pop(count))
+                Q=self.__sum_points(Q,R[count])
             count+=1
         return Q
 
@@ -98,7 +98,7 @@ class ECC(object):
     def __kpub_generator(self, kprv):
         return self.__redoubling_method(self.B, kprv)
 
-    """Method to check if private key is right"""
+    """Method to generate keys pair"""
     def keys_generator(self):
         N=len(bin(self.n))
         if (N<160 & N>223):
