@@ -18,7 +18,8 @@ class KoblitzAlgorithm(object):
             Pm=Point(-1,-1)
             for i in range(h):
                 x=m*h+i
-                y=math.sqrt((x**3+self.a*x+self.b)%self.p)%self.p
+                z=(x**3+self.a*x+self.b)%self.p
+                y=math.sqrt(z)
                 if y.is_integer():
                     Pm.setX(x)
                     Pm.setY(y)

@@ -34,9 +34,6 @@ class Test(object):
         n=int('FFFFFFFFFFFFFFFFFFFFFFFF99DEF836146BC9B1B4D22831',16)
         h=int('01',16)
         seed=int('3045AE6FC8422F64ED579528D38120EAE12196D5',16)
-        """Added generator point to the plot"""
-        plt.axis([float(0),float(p),float(0),float(p)])
-        plt.plot(B.X,B.Y, marker='o')
 
         """Curve setting and keys generation"""
         encryptor=ECC(a,b,p, B,n,h,seed)
@@ -50,9 +47,10 @@ class Test(object):
             Pm=transformer.trasform_message(i,h)
             plt.plot(Pm.X,Pm.Y, marker='o')
             p_message.append(Pm)
+            print(Pm.getCoordinate())
 
         """Plot settings and show"""
-        plt.show()
+        #plt.show()
 
         if p_message.__len__()!=msg.__len__():
             print("it's impossible to generate a point for this value of h")
@@ -63,8 +61,7 @@ class Test(object):
             print(p_message.__len__())
             for p in p_message:
                 #for every point i'll use a different r to have different pair on same points 
-                #r=random.randint(1,n-1)
-                r=5
+                r=random.randint(1,n-1)
                 encrypt_message.append(encryptor.encrypt(r, kpubD, p))
                 print("Point generated")
             
@@ -74,7 +71,7 @@ class Test(object):
             for p in encrypt_message:
                 c=encryptor.decrypt(p,kprvD)
                 decrypt_message.append(c)
-                print("I have decypted a point ", c.getCoordinate())
+                print("I have decrypted a point ", c.getCoordinate())
             
             msgrcv=[]
             for p in decrypt_message:
