@@ -19,7 +19,6 @@ class KoblitzAlgorithm(object):
             for i in range(h):
                 x=m*h+i
                 y=math.sqrt((x**3+self.a*x+self.b)%self.p)%self.p
-                print(y)
                 if y.is_integer():
                     Pm.setX(x)
                     Pm.setY(y)

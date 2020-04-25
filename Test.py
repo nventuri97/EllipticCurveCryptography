@@ -14,14 +14,14 @@ class Test(object):
         print("Welcome in test class")
         
         """I'm reading an image and trasfom it into a string"""
-        
+        """
         with open("./Elliptic_curve1.png", "rb") as image:
             b64string = base64.b64encode(image.read())
-        
+        """
 
         """Decode the string into ascii and trasform this string in a ascii character array"""
-        message=b64string.decode('ascii')
-        #message='ciao'
+        #message=b64string.decode('ascii')
+        message='ciao'
         msg=[]
         for c in message:
             msg.append(ord(c))
@@ -35,6 +35,7 @@ class Test(object):
         h=int('01',16)
         seed=int('3045AE6FC8422F64ED579528D38120EAE12196D5',16)
         """Added generator point to the plot"""
+        plt.axis([float(0),float(p),float(0),float(p)])
         plt.plot(B.X,B.Y, marker='o')
 
         """Curve setting and keys generation"""
@@ -49,11 +50,9 @@ class Test(object):
             Pm=transformer.trasform_message(i,h)
             plt.plot(Pm.X,Pm.Y, marker='o')
             p_message.append(Pm)
-            print(Pm.getCoordinate())
 
         """Plot settings and show"""
-        #plt.axis([0,p+5,0,p+5])
-        #plt.show()
+        plt.show()
 
         if p_message.__len__()!=msg.__len__():
             print("it's impossible to generate a point for this value of h")
