@@ -17,11 +17,23 @@ class KoblitzAlgorithm(object):
         else:
             Pm=Point(-1,-1)
             for i in range(h):
-                x=m*h+i
+                x=(m*h+i)%self.p
                 z=(x**3+self.a*x+self.b)%self.p
-                y=math.sqrt(z)
-                if y.is_integer():
-                    Pm.setX(x)
-                    Pm.setY(y)
-                    break
+                print("Z is ", z)
+                if self.__quadratic_residue(z):
+                    y=math.sqrt(z)
+                    if y.is_integer():
+                        Pm.setX(x)
+                        Pm.setY(y)
+                        break
             return Pm
+    
+    def __quadratic_residue(self, z):
+        v=int(((self.p-1)/2)%self.p)
+        print("P is ", self.p)
+        print("V is", v)
+        x=pow(int(z), int(v), self.p)
+        print("X is", x)
+        if x==1:
+            return True
+        return False
