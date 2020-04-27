@@ -10,21 +10,28 @@ class KoblitzAlgorithm(object):
         self.p=p
         self.a=a
         self.b=b
+        
+    def trasform_message(self, m, h):
+        if (m+1)*h>=self.p:
+            raise NonValidHException
+        else:
+            Pm=Point(-1,-1)
+            for i in range(h):
+                x=(m*h+i)%self.p
+                t=pow(int(x),3,self.p)
+                w=(int(x)*self.a)%self.p
+                z=(t+w+self.b)%self.p
+                if self.__quadratic_residue(z)==1:
+                    y=self.__tonelli(z, self.p)
+                    Pm.setX(x)
+                    Pm.setY(y)
+                    break
+            return Pm
 
     def __quadratic_residue(self, z):
-        v=((self.p-1)//2)%self.p
-        x=pow(z, v, self.p)
-        print("P is ", self.p)
-        print("X is ", x)
-        if x==1:
-            return True
-        return False
-
-    def __legendre(self, c, p):
-        return pow(c, (p - 1) // 2, p)
+        return pow(z, (self.p-1)//2, self.p)
     
     def __tonelli(self, n, p):
-        assert __legendre(n, p) == 1 #not a square (mod p)
         q = p - 1
         s = 0
         while q % 2 == 0:
@@ -33,7 +40,7 @@ class KoblitzAlgorithm(object):
         if s == 1:
             return pow(n, (p + 1) // 4, p)
         for z in range(2, p):
-            if p - 1 == __legendre(z, p):
+            if p - 1 == self.__quadratic_residue(z, p):
                 break
         c = pow(z, q, p)
         r = pow(n, (q + 1) // 2, p)
@@ -52,20 +59,3 @@ class KoblitzAlgorithm(object):
             t = (t * c) % p
             m = i
         return r
-
-    def trasform_message(self, m, h):
-        if (m+1)*h>=self.p:
-            raise NonValidHException
-        else:
-            Pm=Point(-1,-1)
-            for i in range(h):
-                x=(m*h+i)%self.p
-                z=(pow(int(x),3)+int(x)*self.a+self.b)%self.p
-                print("Z is ", z)
-                if self.__tonelli(z, self.p):
-                    y=int(math.sqrt(z)%self.p)
-                    print(pow(y, 2, self.p)==(pow(int(x),3)+int(x)*self.a+self.b)%self.p)
-                    Pm.setX(x)
-                    Pm.setY(y)
-                    break
-            return Pm
