@@ -56,16 +56,16 @@ class Test(object):
         p_message=[]
         for i in msg:
             Pm=transformer.trasform_message(i,h)
-            print("I is ", i)
             plt.plot(Pm.X,Pm.Y, marker='o')
-            p_message.append(Pm)
+            if Pm!=(-1,-1) :
+                p_message.append(Pm)
             print(Pm.getCoordinate())
 
         """Plot settings and show"""
-        plt.show()
+        #plt.show()
 
         if p_message.__len__()!=msg.__len__():
-            print("it's impossible to generate a point for this value of h")
+            print("It's impossible to generate a point for this value of h")
         else:
             #Message encryption simulation
             print("Now encrypt the message")
