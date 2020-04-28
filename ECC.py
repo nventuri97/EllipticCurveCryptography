@@ -15,7 +15,8 @@ class ECC(object):
         self.B=B
         self.n=n
         self.h=h
-        self.seed=seed   
+        self.seed=seed
+        random.seed(self.seed)   
 
     """Method to generate the inverse -A of a point A"""
     def __gen_Inverse(self, A):
@@ -64,18 +65,21 @@ class ECC(object):
         
     """Method which execute the redoubling method to calculate the product of an integer k per a point A"""
     def __redoubling_method(self, A, k):
+        if k==1 :
+            return A
         kbin=bin(k)
         kbin=kbin[2:]
-        R=[A]
+        R=[]
         D=A
-        Q=Point()
-        count=0
-        for i in kbin[2:]:
+        len=kbin.__len__()
+        for i in kbin[:len-1]:
             D=self.__sum_points(D,D)
-            R.append(D)
             if i=="1":
-                Q=self.__sum_points(Q,R[count])
-            count+=1
+                R.append(D)
+            
+        Q=R.pop(0)
+        for P in R:
+            Q=self.__sum_points(Q,P)
         return Q
 
     """Method to encypt Pm and generate the pair <V,W> to send"""
@@ -103,7 +107,6 @@ class ECC(object):
         N=len(bin(self.n))
         if (N<160 & N>223):
             raise InvalidParameterException
-        random.seed(self.seed)
         c=random.randint(1, self.n-1)
         d=(c%(self.n-1))+1
         Q=self.__kpub_generator(d)

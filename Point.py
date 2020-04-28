@@ -19,3 +19,9 @@ class Point(object):
 
     def getY(self):
         return self.Y
+
+    def equals(self, P):
+        if self.X==P.X & self.Y==P.Y:
+            return True
+        else:
+            return False
