@@ -1,4 +1,4 @@
-"""Test file"""
+"""Test file for secp192r1"""
 import math
 import sys
 import random
@@ -8,39 +8,27 @@ from Point import Point
 from KoblitzAlgorithm import KoblitzAlgorithm
 from ECC import ECC
 
-class Test(object):
+class Test192r1(object):
 
     def main():
-        print("Welcome in test class")
+        print("-------------------Elliptic curve cryptography-------------------")
+        print("-----encryption and decryption of an image using secp256-r1------")
+        print("-----------------------------------------------------------------")
+        print("\n")
         
         """I'm reading an image and trasfom it into a string"""
-        """
         with open("./Elliptic_curve1.png", "rb") as image:
             b64string = base64.b64encode(image.read())
-        """
-
+        
         """Decode the string into ascii and trasform this string in a ascii character array"""
-        #message=b64string.decode('ascii')
-        message='ciao'
+        message=b64string.decode('ascii')
+        #message='ciao'
         msg=[]
         for c in message:
             msg.append(ord(c))
 
-        
-        """Curve on p-192r1"""
-        
-        p=int(2**192-2**64-1)
-        a=int('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFFFFFFFC', 16)
-        b=int('64210519E59C80E70FA7E9AB72243049FEB8DEECC146B9B1', 16)
-        gx=int('188DA80EB03090F67CBF20EB43A18800F4FF0AFD82FF1012',16)
-        gy=int('07192B95FFC8DA78631011ED6B24CDD573F977A11E794811',16)
-        G=Point(gx, gy)
-        n=int('FFFFFFFFFFFFFFFFFFFFFFFF99DEF836146BC9B1B4D22831',16)
-        h=int('01',16)
-        seed=int('3045AE6FC8422F64ED579528D38120EAE12196D5',16)
-        
         """Curve on p-256r1"""
-        """
+        
         p=int('FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF', 16)
         a=int('FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC', 16)
         b=int('5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B', 16)
@@ -49,16 +37,35 @@ class Test(object):
         G=Point(gx, gy)
         n=int('FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551',16)
         h=int('01',16)
-        seed=int('C49D360886E704936A6678E1139D26B7819F7E90',16)"""
+        seed=int('C49D360886E704936A6678E1139D26B7819F7E90',16)
+
+        print("-------------------Curve parameters------------------------------")
+        print("-----------------------------------------------------------------")
+        print("Odd prime p is ", p,"\n")
+        print("Value of a is ", a, "\n")
+        print("Value of b is ", b, "\n")
+        print("Generator point G is ", G.getCoordinate(), "\n")
+        print("Point order is ", n, "\n")
+        print("Starting value of h is ", h, "\n")
+        print("Seed for random value is ", seed, "\n")
 
         #Curve setting and keys generation
         encryptor=ECC(a,b,p, G,n,h,seed)
         random.seed(seed)
 
+        print("-------------------Keys generation-----------------------------")
+        print("---------------------------------------------------------------")
         (kprvM,kpubM)=encryptor.keys_generator()
-        print("mitt keys pair is ", kprvM, kpubM.getCoordinate())
+        print("Mitt keys are: ")
+        print("Private key ", kprvM)
+        print("Public key ", kpubM.getCoordinate())
+        print("---------------------------------------------------------------")
         (kprvD,kpubD)=encryptor.keys_generator()
-        print("dest keys pair is ", kprvD, kpubD.getCoordinate())
+        print("Dest keys are: ")
+        print("Private key ", kprvD)
+        print("Public key ", kpubD.getCoordinate())
+        print("---------------------------------------------------------------")
+        print("\n")
 
         transformer=KoblitzAlgorithm(a,b,p)
         trovato=False
@@ -70,8 +77,9 @@ class Test(object):
                 Pm=transformer.trasform_message(i,h)
                 plt.plot(Pm.X,Pm.Y, marker='.')
                 #If Pm is (-1,-1), it's not a curve point and it can't be added to the array
-                if not Pm.equals(ErrPoint):
-                    p_message.append(Pm)
+                if Pm.equals(ErrPoint):
+                    break
+                p_message.append(Pm)
             if p_message.__len__()!=msg.__len__():
                 print("It's impossible to generate a point for this value of h ", h)
                 h+=1
@@ -80,6 +88,7 @@ class Test(object):
                 print("Right value of h is ", h)
 
         """Plot settings and show"""
+        plt.title("Message points generated with Koblitz algorithm")
         plt.show()
 
         #Message encryption simulation
@@ -91,17 +100,12 @@ class Test(object):
             #for every point i'll use a different r to have different pair on same points 
             r=random.randint(1,n-1)
             (V,W)=encryptor.encrypt(r, kpubD, cr)
-            plt.plot(V.X,V.Y, marker='o')
-            v='V'+str(count)
-            plt.text(V.X,V.Y, v)
-            plt.plot(W.X,W.Y, marker='o')
-            w='W'+str(count)
-            plt.text(W.X,W.Y, w)
+            plt.plot(V.X,V.Y, marker='.')
+            plt.plot(W.X,W.Y, marker='.')
             encrypted_message.append((V,W))
             count+=1
-            print("V is ", V.getCoordinate())
-            print("W is ", W.getCoordinate())
         
+        plt.title("Points pair generated by the encryption method")
         plt.show()
         
         #Message decryption simulation
@@ -110,17 +114,20 @@ class Test(object):
         for couple in encrypted_message:
             c=encryptor.decrypt(couple,kprvD)
             decrypt_message.append(c)
-            print("I have decrypted a point ", c.getCoordinate())
         
         msgrcv=[]
         for p in decrypt_message:
             msgrcv.append(math.floor(p.X//h))
 
-        s=[]
+        s=""
         for i in msgrcv:
-            s.append(chr(i))
+            s+=chr(i)
         
-        print("Message received is ", s)
+        print(s==message)
+        imagedata=base64.b64decode(s)
+        image='new_image.png'
+        with open(image, 'wb') as f:
+            f.write(imagedata)
 
     if __name__=="__main__":
         main()
