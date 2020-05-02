@@ -1,3 +1,0 @@
-
-class NoCurvePointException(Exception):
-    pass

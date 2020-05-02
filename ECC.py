@@ -16,7 +16,7 @@ class ECC(object):
         self.n=n
         self.h=h
         self.seed=seed
-        random.seed(self.seed)   
+        random.seed(self.seed)
 
     """Method to generate the inverse -A of a point A"""
     def __gen_Inverse(self, A):
@@ -69,17 +69,18 @@ class ECC(object):
             return A
         kbin=bin(k)
         kbin=kbin[2:]
-        R=[]
         D=A
+        Q=Point()
         len=kbin.__len__()
         for i in kbin[:len-1]:
             D=self.__sum_points(D,D)
             if i=="1":
-                R.append(D)
-            
-        Q=R.pop(0)
-        for P in R:
-            Q=self.__sum_points(Q,P)
+                if Q.X==0 & Q.Y==0:
+                    Q.setX(D.X)
+                    Q.setY(D.Y)
+                else:
+                    Q=self.__sum_points(Q,D)
+
         return Q
 
     """Method to encypt Pm and generate the pair <V,W> to send"""
@@ -107,7 +108,7 @@ class ECC(object):
         N=len(bin(self.n))
         if (N<160 & N>223):
             raise InvalidParameterException
-        c=random.randint(1, self.n-1)
+        c=random.randint(2, self.n-1)
         d=(c%(self.n-1))+1
         Q=self.__kpub_generator(d)
         return (d,Q)

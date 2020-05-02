@@ -18,9 +18,7 @@ class KoblitzAlgorithm(object):
             Pm=Point(-1,-1)
             for i in range(h):
                 x=(m*h+i)%self.p
-                t=pow(int(x),3,self.p)
-                w=(int(x)*self.a)%self.p
-                z=(t+w+self.b)%self.p
+                z=(pow(int(x),3,self.p)+int(x)*self.a+self.b)%self.p
                 if self.__quadratic_residue(z)==1:
                     y=self.__tonelli(z, self.p)
                     Pm.setX(x)

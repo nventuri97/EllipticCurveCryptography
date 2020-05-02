@@ -13,11 +13,12 @@ class Test192r1(object):
     def main():
         print("-------------------Elliptic curve cryptography-------------------")
         print("-----encryption and decryption of an image using secp256-r1------")
+        print("-------------developed in Python from Nicola Venturi-------------")
         print("-----------------------------------------------------------------")
         print("\n")
         
         """I'm reading an image and trasfom it into a string"""
-        with open("./Elliptic_curve1.png", "rb") as image:
+        with open("./python-1-226045.png", "rb") as image:
             b64string = base64.b64encode(image.read())
         
         """Decode the string into ascii and trasform this string in a ascii character array"""
@@ -98,7 +99,7 @@ class Test192r1(object):
         count=0
         for cr in p_message:
             #for every point i'll use a different r to have different pair on same points 
-            r=random.randint(1,n-1)
+            r=random.randint(2,n-1)
             (V,W)=encryptor.encrypt(r, kpubD, cr)
             plt.plot(V.X,V.Y, marker='.')
             plt.plot(W.X,W.Y, marker='.')
