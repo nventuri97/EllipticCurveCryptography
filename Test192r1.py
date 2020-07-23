@@ -147,7 +147,7 @@ msgrcv = []
 for p in decrypt_message:
     msgrcv.append(math.floor(p.X//h))
 
-s = "".join(msgrcv)
+s = "".join([str(c) for c in msgrcv])
 
 print(s == message)
 imagedata = base64.b64decode(s)
