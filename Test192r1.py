@@ -143,11 +143,8 @@ plt.show(block=False)
 print("Now you have to decrypt message")
 decrypt_message = parallelize(encrypted_message, decrypt)
 
-msgrcv = []
-for p in decrypt_message:
-    msgrcv.append(math.floor(p.X//h))
-
-s = "".join([str(c) for c in msgrcv])
+msgrcv = list(map(lambda point: math.floor(point.X//h), decrypt_message))
+s = "".join([chr(c) for c in msgrcv])
 
 print(s == message)
 imagedata = base64.b64decode(s)
